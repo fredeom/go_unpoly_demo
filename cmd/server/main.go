@@ -13,7 +13,7 @@ import (
 
 	"github.com/fredeom/go_unpoly_demo/internal/db"
 	"github.com/fredeom/go_unpoly_demo/internal/handlers"
-	"github.com/fredeom/go_unpoly_demo/internal/service"
+	services "github.com/fredeom/go_unpoly_demo/internal/services"
 )
 
 const dbName = "db3"
@@ -26,11 +26,13 @@ func main() {
 		log.Fatalf("failed to create store: %s", err)
 	}
 
-	cs := service.New(store)
+	cs := services.New(store)
 
 	hCompany := handlers.NewCompanyHandler(cs)
+	hProject := handlers.NewProjectHandler(cs)
+	hTask := handlers.NewTaskHandler(cs)
 
-	handlers.SetupRoutes(r, hCompany)
+	handlers.SetupRoutes(r, hCompany, hProject, hTask)
 
 	err3 := http.ListenAndServe(":3000", r)
 	if err3 != nil {

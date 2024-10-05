@@ -18,6 +18,8 @@ type CompanyService interface {
 	DeleteCompany(id int64) error
 	NewCompany(name string, address string) (int64, error)
 	PopulateStore() error
+
+	QueryProjectsByCompanyId(id int64) ([]domain.Project, error)
 }
 
 type CompanyHandler struct {
@@ -47,7 +49,12 @@ func (ch *CompanyHandler) HandleShowCompany(w http.ResponseWriter, r *http.Reque
 		views.Error(err.Error()).Render(r.Context(), w)
 		return
 	}
-	views.Company(company).Render(r.Context(), w)
+	projects, err2 := ch.CompanyService.QueryProjectsByCompanyId(int64(value))
+	if err2 != nil {
+		views.Error(err2.Error()).Render(r.Context(), w)
+		return
+	}
+	views.Company(company, projects).Render(r.Context(), w)
 }
 
 func (ch *CompanyHandler) HandleEditCompany(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +91,6 @@ func (ch *CompanyHandler) HandleDeleteCompany(w http.ResponseWriter, r *http.Req
 		}
 		w.Header().Set("X-Up-Events", "[{ \"type\": \"company:destroyed\"}]")
 	}
-
 }
 
 func (ch *CompanyHandler) HandleNewCompany(w http.ResponseWriter, r *http.Request) {

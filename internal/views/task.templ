@@ -1,0 +1,54 @@
+package views
+
+import (
+    "fmt"
+    "github.com/fredeom/go_unpoly_demo/internal/domain"
+)
+
+templ Tasks(tasks []domain.Task) {
+    <article>
+        <div>
+            <h1 style="display: inline-block">Все задачи</h1>
+            <form style="display: inline-block; margin-left: 1rem;"
+                  up-target=".table"
+                  up-autosubmit="true"
+                  action="/tasks"
+                  accept-charset="UTF-8"
+                  method="get">
+                <input type="search" placeholder="Поиск…" name="query" autocomplete="off" size="14"/>
+            </form>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-layer="new"
+                up-accept-location="/tasks/$id"
+                up-on-accepted="up.reload('.table', { focus: ':main' })"
+                href="/tasks/new">Новая задача</a>
+        </div>
+        @TaskTable(tasks)
+    </article>
+}
+
+templ TaskTable(tasks []domain.Task) {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+            </tr>
+        </thead>
+        <tbody>
+            for _, item := range tasks {
+                <tr>
+                    <td>
+                        <a href={ templ.URL(fmt.Sprintf("/tasks/%v", item.ID)) }
+                           up-layer="new"
+                           up-dismiss-event="task:destroyed"
+                           up-on-dismissed="up.reload('.table', { focus: ':main' })"
+                           >
+                            { item.Name }
+                        </a>
+                    </td>
+                    <td>CARDS</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -55,5 +55,29 @@ func createMigrations(db *sql.DB) error {
 		return err
 	}
 
+	stmt2 := `CREATE TABLE IF NOT EXISTS project (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			company_id INTEGER NOT NULL,
+			name TEXT NOT NULL,
+			budget INTEGER NOT NULL
+		);`
+
+	_, err2 := db.Exec(stmt2)
+	if err2 != nil {
+		return err2
+	}
+
+	stmt3 := `CREATE TABLE IF NOT EXISTS task (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			project_id INTEGER NOT NULL,
+			name TEXT NOT NULL,
+			done INTEGER NOT NULL
+		);`
+
+	_, err3 := db.Exec(stmt3)
+	if err3 != nil {
+		return err3
+	}
+
 	return nil
 }

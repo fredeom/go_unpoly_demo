@@ -1,0 +1,82 @@
+package views
+
+import (
+    "fmt"
+    "github.com/fredeom/go_unpoly_demo/internal/domain"
+)
+
+templ Projects(projects []domain.Project) {
+    <article>
+        <div>
+            <h1 style="display: inline-block">Все проекты</h1>
+            <form style="display: inline-block; margin-left: 1rem;"
+                  up-target=".table"
+                  up-autosubmit="true"
+                  action="/projects"
+                  accept-charset="UTF-8"
+                  method="get">
+                <input type="search" placeholder="Поиск…" name="query" autocomplete="off" size="14"/>
+            </form>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-layer="new"
+                up-accept-location="/projects/$id"
+                up-on-accepted="up.reload('.table', { focus: ':main' })"
+                href="/projects/new">Новый проект</a>
+        </div>
+        @ProjectTable(projects)
+    </article>
+}
+
+templ ProjectTable(projects []domain.Project) {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Компания</th>
+            </tr>
+        </thead>
+        <tbody>
+            for _, item := range projects {
+                <tr>
+                    <td>
+                        <a href={ templ.URL(fmt.Sprintf("/projects/%v", item.ID)) }
+                           up-layer="new"
+                           up-dismiss-event="project:destroyed"
+                           up-on-dismissed="up.reload('.table', { focus: ':main' })"
+                           >
+                            { item.Name }
+                        </a>
+                    </td>
+                    <td>COMPANY</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+templ ProjectSubTable(projects []domain.Project) {
+    <table class="table2">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Бюджет</th>
+            </tr>
+        </thead>
+        <tbody>
+            for _, item := range projects {
+                <tr>
+                    <td>
+                        <a href={ templ.URL(fmt.Sprintf("/projects/%v", item.ID)) }
+                           up-layer="new"
+                           up-dismiss-event="project:destroyed"
+                           up-on-dismissed="up.reload('.table2', { focus: ':main' }); up.reload('.table', { focus: ':main' })"
+                           >
+                            { item.Name }
+                        </a>
+                    </td>
+                    <td>€{ fmt.Sprintf("%v", item.Budget) }</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

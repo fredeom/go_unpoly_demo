@@ -1,10 +1,5 @@
 package views
 
-import (
-    "fmt"
-    "github.com/fredeom/go_unpoly_demo/internal/domain"
-)
-
 templ Index() {
     <!DOCTYPE html>
     <html lang="ru">
@@ -14,15 +9,15 @@ templ Index() {
             <link rel="stylesheet" href="/static/css/style.css">
             <link rel="stylesheet" href="/static/css/unpoly.css" />
             <script src="/static/js/unpoly.js"></script>
-            <title>TITLE</title>
+            <title>Go Unpoly Demo</title>
         </head>
         <body>
             <header>
                 <nav>
                     <ul>
                         <li><a href="/companies" up-target="article">Компании</a></li>
-                        <li><a href="#">Проекты</a></li>
-                        <li><a href="#">Задачи</a></li>
+                        <li><a href="/projects" up-target="article">Проекты</a></li>
+                        <li><a href="/tasks" up-target="article">Задачи</a></li>
                         <li><a href="/newdemo" up-target="article" style="color: #f88;">Обновить</a></li>
                     </ul>
                 </nav>
@@ -35,132 +30,10 @@ templ Index() {
             <footer><p>Футер</p></footer>
             <script>
                 up.log.enable()
-
                 up.fragment.config.navigateOptions.cache = false
             </script>
         </body>
     </html>
-}
-
-templ Companies(companies []domain.Company) {
-    <article>
-        <div>
-            <h1 style="display: inline-block">Все компании</h1>
-            <form style="display: inline-block; margin-left: 1rem;"
-                  up-target=".table"
-                  up-autosubmit="true"
-                  action="/companies"
-                  accept-charset="UTF-8"
-                  method="get">
-                <input type="search" placeholder="Поиск…" name="query" autocomplete="off" size="14"/>
-            </form>
-            <a style="display: inline-block; margin-left: 1rem;"
-                up-layer="new"
-                up-accept-location="/companies/$id"
-                up-on-accepted="up.reload('.table', { focus: ':main' })"
-                href="/companies/new">Новая компания</a>
-        </div>
-        @CompanyTable(companies)
-    </article>
-}
-
-templ CompanyTable(companies []domain.Company) {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Название</th>
-            </tr>
-        </thead>
-        <tbody>
-            for _, item := range companies {
-                <tr>
-                    <td>
-                        <a href={ templ.URL(fmt.Sprintf("/companies/%v", item.ID)) }
-                           up-layer="new"
-                           up-dismiss-event="company:destroyed"
-                           up-on-dismissed="up.reload('.table', { focus: ':main' })"
-                           >
-                            { item.Name }
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-templ CompanyNew() {
-    <main>
-        <h2>Новая компания</h2>
-        <form
-            up-submit="true"
-            up-disable="true"
-        >
-            <div style="margin: 1rem;">
-                <label for="company_name">Название</label>
-                <input placeholder="Введите название компании" name="company[name]" id="company_name" />
-            </div>
-            <div style="margin: 1rem;">
-                <label for="company_address">Адрес</label>
-                <textarea rows="6" name="company[address]" id="company_address"></textarea>
-            </div>
-            <div style="margin: 1rem;">
-                <input type="submit" name="commit" value="Сохранить"/>
-            </div>
-        </form>
-    </main>
-}
-
-templ Company(company domain.Company) {
-    <main>
-        <div>
-            <h1 style="display: inline-block">Компания #{ fmt.Sprintf("%v", company.ID) }</h1>
-            <a style="display: inline-block; margin-left: 1rem;"
-                up-layer="new"
-                up-accept-location="/companies/$id"
-                up-on-accepted="up.reload('.table', { focus: ':main' })"
-                href={ templ.URL(fmt.Sprintf("/companies/%v/edit", company.ID)) }>Редактировать</a>
-            <a style="display: inline-block; margin-left: 1rem;"
-                up-follow="true"
-                up-confirm="Действительно удалить?"
-                rel="nofollow"
-                data-method="delete"
-                up-layer="parent"
-                href={ templ.URL(fmt.Sprintf("/companies/%v", company.ID)) }>Удалить</a>
-        </div>
-        <div>Название: { company.Name }</div>
-        <div>Адрес: { company.Address }</div>
-        <div>
-            <h4 style="display: inline-block">Проекты</h4>
-            <a style="display: inline-block; margin-left: 1rem;"
-                up-layer="new"
-                href="/projects/new">Новый проект</a>
-        </div>
-    </main>
-}
-
-templ EditCompany(company domain.Company) {
-    <main>
-        <h2>Редактирование компании { fmt.Sprintf("%v", company.ID) }</h2>
-        <form
-            up-submit="true"
-            up-disable="true"
-            up-layer="parent"
-        >
-            <input type="hidden" name="company[ID]" value={ fmt.Sprintf("%v", company.ID) } />
-            <div style="margin: 1rem;">
-                <label for="company_name">Название</label>
-                <input placeholder="Введите название компании" name="company[name]" id="company_name" value={ company.Name } />
-            </div>
-            <div style="margin: 1rem;">
-                <label for="company_address">Адрес</label>
-                <textarea rows="6" name="company[address]" id="company_address">{ company.Address }</textarea>
-            </div>
-            <div style="margin: 1rem;">
-                <input type="submit" name="commit" value="Сохранить"/>
-            </div>
-        </form>
-    </main>
 }
 
 templ Error(msg string) {

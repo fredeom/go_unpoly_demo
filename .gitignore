@@ -1,2 +1,2 @@
-internal/views/index_templ.go
+internal/views/*_templ.go
 db3

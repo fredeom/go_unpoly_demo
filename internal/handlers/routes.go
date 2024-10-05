@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func SetupRoutes(r *chi.Mux, hCompany *CompanyHandler) {
+func SetupRoutes(r *chi.Mux, hCompany *CompanyHandler, hProject *ProjectHandler, hTask *TaskHandler) {
 	r.Use(middleware.Logger)
 	r.Use(middleware.StripSlashes)
 	fs := http.FileServer(http.Dir("public"))
@@ -23,4 +23,10 @@ func SetupRoutes(r *chi.Mux, hCompany *CompanyHandler) {
 	r.Get("/companies/{id}/edit", hCompany.HandleEditCompany)
 	r.Post("/companies/{id}", hCompany.HandleDeleteCompany)
 	r.Get("/companies/new", hCompany.HandleNewCompany)
+
+	r.Get("/projects", hProject.HandleQueryProjects)
+	r.Post("/projects/{id}", hProject.HandleDeleteProject)
+
+	r.Get("/tasks", hTask.HandleQueryTasks)
+	r.Post("/tasks/{id}", hTask.HandleDeleteTask)
 }
