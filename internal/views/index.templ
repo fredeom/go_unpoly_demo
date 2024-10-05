@@ -2,7 +2,7 @@ package views
 
 import (
     "fmt"
-    "github.com/fredeom/go_unpoly_demo/internal/db"
+    "github.com/fredeom/go_unpoly_demo/internal/domain"
 )
 
 templ Index() {
@@ -23,6 +23,7 @@ templ Index() {
                         <li><a href="/companies" up-target="article">Компании</a></li>
                         <li><a href="#">Проекты</a></li>
                         <li><a href="#">Задачи</a></li>
+                        <li><a href="/newdemo" up-target="article" style="color: #f88;">Обновить</a></li>
                     </ul>
                 </nav>
             </header>
@@ -34,12 +35,14 @@ templ Index() {
             <footer><p>Футер</p></footer>
             <script>
                 up.log.enable()
+
+                up.fragment.config.navigateOptions.cache = false
             </script>
         </body>
     </html>
 }
 
-templ Companies(companies []db.Company) {
+templ Companies(companies []domain.Company) {
     <article>
         <div>
             <h1 style="display: inline-block">Все компании</h1>
@@ -61,7 +64,7 @@ templ Companies(companies []db.Company) {
     </article>
 }
 
-templ CompanyTable(companies []db.Company) {
+templ CompanyTable(companies []domain.Company) {
     <table class="table">
         <thead>
             <tr>
@@ -108,13 +111,12 @@ templ CompanyNew() {
     </main>
 }
 
-templ Company(company db.Company) {
+templ Company(company domain.Company) {
     <main>
         <div>
             <h1 style="display: inline-block">Компания #{ fmt.Sprintf("%v", company.ID) }</h1>
             <a style="display: inline-block; margin-left: 1rem;"
                 up-layer="new"
-                up-cache="false"
                 up-accept-location="/companies/$id"
                 up-on-accepted="up.reload('.table', { focus: ':main' })"
                 href={ templ.URL(fmt.Sprintf("/companies/%v/edit", company.ID)) }>Редактировать</a>
@@ -137,7 +139,7 @@ templ Company(company db.Company) {
     </main>
 }
 
-templ EditCompany(company db.Company) {
+templ EditCompany(company domain.Company) {
     <main>
         <h2>Редактирование компании { fmt.Sprintf("%v", company.ID) }</h2>
         <form
