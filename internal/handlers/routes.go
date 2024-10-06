@@ -31,5 +31,10 @@ func SetupRoutes(r *chi.Mux, hCompany *CompanyHandler, hProject *ProjectHandler,
 	r.Get("/projects/new", hProject.HandleNewProject)
 
 	r.Get("/tasks", hTask.HandleQueryTasks)
-	r.Post("/tasks/{id}", hTask.HandleDeleteTask)
+	r.Post("/tasks", hTask.HandleNewTask)
+	r.Get("/tasks/{id}", hTask.HandleShowTask)
+	r.Post("/tasks/{id}/toggle_done", hTask.HandleToggleDoneTask)
+	r.Get("/tasks/{id}/edit", hTask.HandleEditTask)
+	r.Post("/tasks/delete_done", hTask.HandleDeleteAllDoneTasks)
+	r.Get("/tasks/new", hTask.HandleNewTask)
 }

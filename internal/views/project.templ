@@ -104,6 +104,11 @@ templ ProjectNew(companyId int64, companies []domain.Company) {
                             <option value={ fmt.Sprintf("%v", item.ID) }>{ item.Name }</option>
                         }
                     </select>
+                    <a
+                        up-layer="new"
+                        up-accept-location="/companies/$id"
+                        up-on-accepted="up.reload('form'); setTimeout(() => document.getElementById('project_company').value = value.id, 100)"
+                        href="/companies/new">Новая компания</a>
                 </div>
             } else {
                 <input type="hidden" name="company[id]" value={ fmt.Sprintf("%v", companyId) } />

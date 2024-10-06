@@ -56,3 +56,79 @@ footer {
 .error {
     color: red;
 }
+
+.tasks {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.task:not(.done) {
+    border-color: #17a2b8;
+}
+
+.task {
+    flex: 0 0 358px;
+    height: 180px;
+}
+
+.task.done {
+    opacity: 0.6;
+}
+.task.done .card-text {
+    text-decoration:line-through
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,0.125);
+    border-radius: 0.25rem;
+}
+
+.flex-column {
+    flex-direction: column !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+
+.card {
+    word-wrap: break-word;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+}
+
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
+
+.flex-grow-0 {
+    flex-grow: 0 !important;
+}
+
+textarea {
+    width: 100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}

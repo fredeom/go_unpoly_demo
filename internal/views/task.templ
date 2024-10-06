@@ -10,7 +10,7 @@ templ Tasks(tasks []domain.Task) {
         <div>
             <h1 style="display: inline-block">Все задачи</h1>
             <form style="display: inline-block; margin-left: 1rem;"
-                  up-target=".table"
+                  up-target=".tasks"
                   up-autosubmit="true"
                   action="/tasks"
                   accept-charset="UTF-8"
@@ -19,36 +19,93 @@ templ Tasks(tasks []domain.Task) {
             </form>
             <a style="display: inline-block; margin-left: 1rem;"
                 up-layer="new"
-                up-accept-location="/tasks/$id"
-                up-on-accepted="up.reload('.table', { focus: ':main' })"
+                up-accept-event="task:created"
+                up-on-accepted="up.reload('.tasks')"
+                up-accept-location="/tasks/{id}"
                 href="/tasks/new">Новая задача</a>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-confirm="Действительно удалить?"
+                up-follow="true"
+                data-method="delete"
+                up-accept-event="tasks:destroyed"
+                up-on-accepted="up.reload('.tasks')"
+                up-layer="new"
+                href="/tasks/delete_done">Удалить завершённые</a>
         </div>
-        @TaskTable(tasks)
+        @TasksDiv(tasks)
     </article>
 }
 
-templ TaskTable(tasks []domain.Task) {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Название</th>
-            </tr>
-        </thead>
-        <tbody>
-            for _, item := range tasks {
-                <tr>
-                    <td>
-                        <a href={ templ.URL(fmt.Sprintf("/tasks/%v", item.ID)) }
-                           up-layer="new"
-                           up-dismiss-event="task:destroyed"
-                           up-on-dismissed="up.reload('.table', { focus: ':main' })"
-                           >
-                            { item.Name }
-                        </a>
-                    </td>
-                    <td>CARDS</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+func testDone(isDone int) string {
+    if isDone == 1 {
+        return "card task done"
+    }
+    return "card task"
+}
+
+templ TasksDiv(tasks []domain.Task) {
+    <div class="tasks">
+        for _, item := range tasks {
+            @Task(item)
+        }
+    </div>
+}
+
+templ EditTask(task domain.Task) {
+    <form
+        class="task card"
+        up-target=".task"
+    >
+        <div class="card-body d-flex flex-column">
+            <input type="hidden" name="task[ID]" value={ fmt.Sprintf("%v", task.ID) } />
+            <input type="hidden" name="task[done]" value={ fmt.Sprintf("%v", task.Done) } />
+            <div class="card-text flex-grow-1">
+                <label for="task_name">Название</label>
+                <textarea rows="5" name="task[name]" id="task_name">{ task.Name }</textarea>
+            </div>
+            <div class="flex-grow-0">
+                <input type="submit" name="commit" value="Сохранить"/>
+            </div>
+        </div>
+    </form>
+}
+
+templ Task(task domain.Task) {
+    <div class={ testDone(task.Done) }>
+        <div class="card-body d-flex flex-column">
+            <div class="card-text flex-grow-1">
+                { task.Name }
+            </div>
+            <div class="flex-grow-0">
+                <a
+                    up-target=".task"
+                    rel="nofollow"
+                    data-method="patch"
+                    href={ templ.URL(fmt.Sprintf("/tasks/%v/toggle_done", task.ID ))}>Завершено</a>
+                <a up-target=".task" href={ templ.URL(fmt.Sprintf("/tasks/%v/edit", task.ID))}>Редактировать</a>
+            </div>
+        </div>
+    </div>
+}
+
+templ TaskNew() {
+    <main>
+        <h2>Новая задача</h2>
+        <form
+            up-submit="true"
+            up-disable="true"
+            class="task card"
+            up-target=".task"
+            action="/tasks"
+            method="post"
+        >
+            <div style="margin: 1rem;">
+                <label for="task_name">Название</label>
+                <textarea id="task_name" name="task[name]"></textarea>
+            </div>
+            <div style="margin: 1rem;">
+                <input type="submit" name="commit" value="Сохранить"/>
+            </div>
+        </form>
+    </main>
 }
