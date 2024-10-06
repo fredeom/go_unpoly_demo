@@ -58,3 +58,32 @@ func (s *Service) DeleteProject(id int64) error {
 	_, err := s.Store.Db.Exec("DELETE FROM project WHERE id=" + fmt.Sprintf("%v", id))
 	return err
 }
+
+func (s *Service) QueryProject(id int64) (domain.Project, error) {
+	stmt, _ := s.Store.Db.Prepare("SELECT * FROM project WHERE id=?")
+	row, err := stmt.Query(id)
+	if err != nil {
+		return domain.Project{}, err
+	}
+	defer row.Close()
+	var project = domain.Project{}
+	for row.Next() {
+		row.Scan(&project.ID, &project.CompanyID, &project.Name, &project.Budget)
+	}
+	return project, nil
+}
+
+func (s *Service) EditProject(id int64, companyId int64, name string, budget int64) sql.Result {
+	statement, _ := s.Store.Db.Prepare("UPDATE project SET company_id=?, name=?, budget=? WHERE id=?")
+	affected, _ := statement.Exec(companyId, name, budget, id)
+	return affected
+}
+
+func (s *Service) QueryCompanyNamesByCompanyIDs() (map[int64]string, error) {
+	companies, _ := s.QueryCompanies("")
+	nameByCompanyID := make(map[int64]string)
+	for i := range companies {
+		nameByCompanyID[companies[i].ID] = companies[i].Name
+	}
+	return nameByCompanyID, nil
+}

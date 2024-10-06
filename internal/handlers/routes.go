@@ -25,7 +25,10 @@ func SetupRoutes(r *chi.Mux, hCompany *CompanyHandler, hProject *ProjectHandler,
 	r.Get("/companies/new", hCompany.HandleNewCompany)
 
 	r.Get("/projects", hProject.HandleQueryProjects)
+	r.Get("/projects/{id}", hProject.HandleShowProject)
+	r.Get("/projects/{id}/edit", hProject.HandleEditProject)
 	r.Post("/projects/{id}", hProject.HandleDeleteProject)
+	r.Get("/projects/new", hProject.HandleNewProject)
 
 	r.Get("/tasks", hTask.HandleQueryTasks)
 	r.Post("/tasks/{id}", hTask.HandleDeleteTask)

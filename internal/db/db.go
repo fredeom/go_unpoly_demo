@@ -69,7 +69,6 @@ func createMigrations(db *sql.DB) error {
 
 	stmt3 := `CREATE TABLE IF NOT EXISTS task (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			project_id INTEGER NOT NULL,
 			name TEXT NOT NULL,
 			done INTEGER NOT NULL
 		);`

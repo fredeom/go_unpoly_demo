@@ -5,7 +5,7 @@ import (
     "github.com/fredeom/go_unpoly_demo/internal/domain"
 )
 
-templ Projects(projects []domain.Project) {
+templ Projects(projects []domain.Project, companyNameByCompanyID map[int64]string) {
     <article>
         <div>
             <h1 style="display: inline-block">Все проекты</h1>
@@ -23,11 +23,11 @@ templ Projects(projects []domain.Project) {
                 up-on-accepted="up.reload('.table', { focus: ':main' })"
                 href="/projects/new">Новый проект</a>
         </div>
-        @ProjectTable(projects)
+        @ProjectTable(projects, companyNameByCompanyID)
     </article>
 }
 
-templ ProjectTable(projects []domain.Project) {
+templ ProjectTable(projects []domain.Project, companyNameByCompanyID map[int64]string) {
     <table class="table">
         <thead>
             <tr>
@@ -47,7 +47,7 @@ templ ProjectTable(projects []domain.Project) {
                             { item.Name }
                         </a>
                     </td>
-                    <td>COMPANY</td>
+                    <td>{ companyNameByCompanyID[item.CompanyID] }</td>
                 </tr>
             }
         </tbody>
@@ -69,7 +69,7 @@ templ ProjectSubTable(projects []domain.Project) {
                         <a href={ templ.URL(fmt.Sprintf("/projects/%v", item.ID)) }
                            up-layer="new"
                            up-dismiss-event="project:destroyed"
-                           up-on-dismissed="up.reload('.table2', { focus: ':main' }); up.reload('.table', { focus: ':main' })"
+                           up-on-dismissed="up.reload('.table2', { focus: ':main' });"
                            >
                             { item.Name }
                         </a>
@@ -79,4 +79,91 @@ templ ProjectSubTable(projects []domain.Project) {
             }
         </tbody>
     </table>
+}
+
+templ ProjectNew(companyId int64, companies []domain.Company) {
+    <main>
+        <h2>Новый проект</h2>
+        <form
+            up-submit="true"
+            up-disable="true"
+        >
+            <div style="margin: 1rem;">
+                <label for="project_name">Название</label>
+                <input placeholder="Введите название проекта" name="project[name]" id="project_name" />
+            </div>
+            <div style="margin: 1rem;">
+                <label for="project_budget">Бюджет, €</label>
+                <input type="number" placeholder="Введите бюджет проекта" name="project[budget]" id="project_budget" />
+            </div>
+            if companyId == 0 {
+                <div style="margin: 1rem;">
+                    <label for="project_company">Компания</label>
+                    <select id="project_company" name="company[id]">
+                        for _, item := range companies {
+                            <option value={ fmt.Sprintf("%v", item.ID) }>{ item.Name }</option>
+                        }
+                    </select>
+                </div>
+            } else {
+                <input type="hidden" name="company[id]" value={ fmt.Sprintf("%v", companyId) } />
+            }
+            <div style="margin: 1rem;">
+                <input type="submit" name="commit" value="Сохранить"/>
+            </div>
+        </form>
+    </main>
+}
+
+templ Project(project domain.Project, company domain.Company) {
+    <main>
+        <div>
+            <h1 style="display: inline-block">Проект #{ fmt.Sprintf("%v", project.ID) }</h1>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-layer="new"
+                up-accept-location="/projects/$id"
+                up-on-accepted="up.reload('.table', { focus: ':main' })"
+                href={ templ.URL(fmt.Sprintf("/projects/%v/edit", project.ID)) }>Редактировать</a>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-follow="true"
+                up-confirm="Действительно удалить?"
+                rel="nofollow"
+                data-method="delete"
+                up-layer="parent"
+                href={ templ.URL(fmt.Sprintf("/projects/%v", project.ID)) }>Удалить</a>
+        </div>
+        <div>Название: { project.Name }</div>
+        <div>Бюджет: { fmt.Sprintf("%v", project.Budget) }</div>
+        <div>
+            <h4 style="display: inline-block">Компания</h4>
+            <a style="display: inline-block; margin-left: 1rem;"
+                up-layer="new"
+                href={ templ.URL(fmt.Sprintf("/companies/%v", company.ID)) }>{ company.Name }</a>
+        </div>
+    </main>
+}
+
+templ EditProject(project domain.Project) {
+    <main>
+        <h2>Редактирование проекта { fmt.Sprintf("%v", project.ID) }</h2>
+        <form
+            up-submit="true"
+            up-disable="true"
+            up-layer="parent"
+        >
+            <input type="hidden" name="project[ID]" value={ fmt.Sprintf("%v", project.ID) } />
+            <input type="hidden" name="company[ID]" value={ fmt.Sprintf("%v", project.CompanyID) } />
+            <div style="margin: 1rem;">
+                <label for="project_name">Название</label>
+                <input placeholder="Введите название проекта" name="project[name]" id="project_name" value={ project.Name } />
+            </div>
+            <div style="margin: 1rem;">
+                <label for="project_budget">Бюджет</label>
+                <input type="number" placeholder="Введите бюджет проекта" name="project[budget]" id="project_budget" value={ fmt.Sprintf("%v", project.Budget) } />
+            </div>
+            <div style="margin: 1rem;">
+                <input type="submit" name="commit" value="Сохранить"/>
+            </div>
+        </form>
+    </main>
 }

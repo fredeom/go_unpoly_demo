@@ -36,6 +36,10 @@ func (s *Service) QueryCompany(id int64) (domain.Company, error) {
 	return company, nil
 }
 
+func (s *Service) QueryCompanyByCompanyId(companyId int64) (domain.Company, error) {
+	return s.QueryCompany(companyId)
+}
+
 func (s *Service) EditCompany(id int64, name string, address string) sql.Result {
 	statement, _ := s.Store.Db.Prepare("UPDATE company SET name=?, address=? WHERE id=?")
 	affected, _ := statement.Exec(name, address, id)
@@ -44,7 +48,11 @@ func (s *Service) EditCompany(id int64, name string, address string) sql.Result 
 
 func (s *Service) DeleteCompany(id int64) error {
 	_, err := s.Store.Db.Exec("DELETE FROM company WHERE id=" + fmt.Sprintf("%v", id))
-	return err
+	if err != nil {
+		return err
+	}
+	_, err2 := s.Store.Db.Exec("DELETE FROM project WHERE company_id=" + fmt.Sprintf("%v", id))
+	return err2
 }
 
 func (s *Service) NewCompany(name string, address string) (int64, error) {

@@ -8,15 +8,15 @@ import (
 	"github.com/fredeom/go_unpoly_demo/internal/domain"
 )
 
-func (s *Service) NewTask(projectId int64, name string) (int64, error) {
+func (s *Service) NewTask(name string) (int64, error) {
 	log.Println("Inserting task record ...")
-	newTaskSQL := `INSERT INTO task(project_id, name, done) VALUES (?, ?, 0)`
+	newTaskSQL := `INSERT INTO task(name, done) VALUES (?, 0)`
 	statement, err := s.Store.Db.Prepare(newTaskSQL)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	var result sql.Result
-	result, err = statement.Exec(projectId, name)
+	result, err = statement.Exec(name)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
@@ -32,7 +32,7 @@ func (s *Service) QueryTasks(query string) ([]domain.Task, error) {
 	var tasks = []domain.Task{}
 	for row.Next() {
 		task := domain.Task{}
-		row.Scan(&task.ID, &task.ProjectID, &task.Name, &task.Done)
+		row.Scan(&task.ID, &task.Name, &task.Done)
 		tasks = append(tasks, task)
 	}
 	return tasks, nil

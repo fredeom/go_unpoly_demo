@@ -97,7 +97,9 @@ templ Company(company domain.Company, projects []domain.Project) {
             <h4 style="display: inline-block">Проекты</h4>
             <a style="display: inline-block; margin-left: 1rem;"
                 up-layer="new"
-                href="/projects/new">Новый проект</a>
+                up-accept-location="/projects/$id"
+                up-on-accepted="up.reload('.table2', { focus: ':main' })"
+                href={ templ.URL(fmt.Sprintf("/projects/new?company_id=%v", company.ID)) } >Новый проект</a>
         </div>
         <div>
             @ProjectSubTable(projects)

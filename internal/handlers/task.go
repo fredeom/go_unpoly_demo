@@ -11,7 +11,7 @@ import (
 
 type TaskService interface {
 	QueryTasks(query string) ([]domain.Task, error)
-	NewTask(projectId int64, name string) (int64, error)
+	NewTask(name string) (int64, error)
 	DeleteTask(id int64) error
 }
 
